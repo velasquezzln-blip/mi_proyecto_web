@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LVFLIX - Películas y Series</title>
+   
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #0d0d0d;
+            --card-bg: #181818;
+            --accent-color: #e50914;
+            --text-color: #ffffff;
+            --text-muted: #e0e0e0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background-color: rgba(10, 10, 10, 0.98);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1600&auto=format&fit=crop') no-repeat center center;
+            background-size: cover;
+            padding: 90px 0;
+            border-bottom: 3px solid var(--accent-color);
+        }
+
+        .hero-section p.lead {
+            color: #f1f1f1 !important;
+            font-weight: 400;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid #282828;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(229, 9, 20, 0.4);
+            border-color: var(--accent-color);
+        }
+
+        .card-img-top {
+            height: 380px;
+            object-fit: cover;
+        }
+
+        .card-title {
+            color: #ffffff !important;
+            font-size: 1.2rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .card-text.text-muted {
+            color: #d1d1d1 !important;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        .badge-category {
+            background-color: var(--accent-color);
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .btn-danger {
+            background-color: var(--accent-color);
+            border: none;
+            font-weight: 600;
+        }
+
+        .btn-danger:hover {
+            background-color: #b20710;
+        }
+
+        .filter-btn {
+            color: #ffffff !important;
+            border-color: #444 !important;
+            font-weight: 500;
+        }
+
+        .filter-btn.active {
+            background-color: var(--accent-color) !important;
+            color: white !important;
+            border-color: var(--accent-color) !important;
+        }
+
+        .modal-content {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            border: 1px solid #444;
+        }
+
+        .modal-body p {
+            color: #e2e2e2 !important;
+        }
+
+        .watchlist-item {
+            background-color: #252525;
+            border-radius: 6px;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+    
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top shadow-sm">
+        <div class="container">
+            <div class="d-flex align-items-center gap-3">
+                <a class="navbar-brand fw-bold text-danger fs-3 mb-0" href="#"><i class="fa-solid fa-film me-2"></i>LVFLIX</a>
+                
+                <button class="btn btn-outline-light btn-sm position-relative ms-2" id="watchlistBtn" data-bs-toggle="modal" data-bs-target="#watchlistModal">
+                    <i class="fa-solid fa-heart text-danger me-1"></i> Mi Lista
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="watchlistCount">0</span>
+                </button>
+            </div>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse justify-content-end mt-2 mt-lg-0" id="navbarNav">
+                <ul class="navbar-nav me-3 mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link active text-white" href="#">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link text-white-50" href="#catalogo">Catálogo</a></li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <input class="form-control form-control-sm bg-dark text-white border-secondary" type="search" id="searchInput" placeholder="Buscar película o serie...">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    
+    <header class="hero-section text-center text-md-start text-white">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-7">
+                    <span class="badge badge-category mb-2 px-3 py-2 text-uppercase">Película Destacada</span>
+                    <h1 class="display-4 fw-bold text-white">The Avengers</h1>
+                    <p class="lead">Los héroes más poderosos del planeta se unen para salvar a la humanidad de una amenaza cósmica sin precedentes liderada por Loki.</p>
+                    <button class="btn btn-danger btn-lg px-4 me-2 view-details" data-bs-toggle="modal" data-bs-target="#movieModal" data-title="The Avengers" data-desc="Los héroes más poderosos del planeta se unen para salvar a la humanidad de una amenaza cósmica sin precedentes liderada por Loki." data-genre="Acción" data-year="2012" data-rating="8.0"><i class="fa-solid fa-play me-2"></i>Ver Ahora</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    
+    <main class="container py-5" id="catalogo">
+        <div class="row mb-4 align-items-center">
+            <div class="col-md-5">
+                <h2 class="fw-bold mb-0 text-white">Explorar en LVFLIX</h2>
+            </div>
+            <div class="col-md-7 text-md-end mt-3 mt-md-0">
+                <div class="btn-group flex-wrap" role="group">
+                    <button type="button" class="btn btn-outline-secondary filter-btn active" data-filter="all">Todos</button>
+                    <button type="button" class="btn btn-outline-secondary filter-btn" data-filter="accion">Acción / Marvel</button>
+                    <button type="button" class="btn btn-outline-secondary filter-btn" data-filter="comedia">Comedia</button>
+                    <button type="button" class="btn btn-outline-secondary filter-btn" data-filter="drama">Drama / Suspenso</button>
+                    <button type="button" class="btn btn-outline-secondary filter-btn" data-filter="terror">Terror</button>
+                    <button type="button" class="btn btn-outline-secondary filter-btn" data-filter="animacion">Animación</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4" id="moviesGrid">
+            
+            <div class="col movie-card" data-category="accion">
+                <div class="card h-100 shadow">
+                    <img src="https://lumiere-a.akamaihd.net/v1/images/the_avengers_2012_poster_july_disney_plus_drops_d4bd9c6e.png" class="card-img-top" alt="The Avengers">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge badge-category">Acción</span>
+                            <small class="text-warning fw-bold"><i class="fa-solid fa-star"></i> 8.0</small>
+                        </div>
+                        <h5 class="card-title fw-bold">The Avengers</h5>
+                        <p class="card-text text-muted small flex-grow-1">Iron Man, Capitán América, Thor y Hulk se unen por primera vez para salvar a la Tierra.</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <button class="btn btn-sm btn-outline-light view-details" data-title="The Avengers" data-desc="Iron Man, Capitán América, Thor, Hulk, Black Widow y Hawkeye deben formar un equipo para detener a Loki y su ejército alienígena." data-genre="Acción" data-year="2012" data-rating="8.0"><i class="fa-solid fa-circle-info"></i> Detalles</button>
+                            <button class="btn btn-sm btn-danger fav-btn" data-title="The Avengers"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col movie-card" data-category="animacion">
+                <div class="card h-100 shadow">
+                    <img src="https://es.web.img3.acsta.net/c_300_300/img/08/89/08892c6553a80e2e71ca85f3eb1635d8.jpg" class="card-img-top" alt="Los Minions">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge badge-category">Animación</span>
+                            <small class="text-warning fw-bold"><i class="fa-solid fa-star"></i> 6.4</small>
+                        </div>
+                        <h5 class="card-title fw-bold">Los Minions</h5>
+                        <p class="card-text text-muted small flex-grow-1">Kevin, Stuart y Bob se embarcan en una aventura para encontrar a un nuevo amo villano.</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <button class="btn btn-sm btn-outline-light view-details" data-title="Los Minions" data-desc="Los disparatados Minions buscan a lo largo de la historia al amo más villano para servirle, terminando en la convención de villanos de 1968." data-genre="Animación" data-year="2015" data-rating="6.4"><i class="fa-solid fa-circle-info"></i> Detalles</button>
+                            <button class="btn btn-sm btn-danger fav-btn" data-title="Los Minions"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col movie-card" data-category="drama">
+                <div class="card h-100 shadow">
+                    <img src="https://fr.web.img2.acsta.net/c_310_420/pictures/21/10/26/08/44/5892242.jpg" class="card-img-top" alt="Dexter">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge badge-category">Drama / Suspenso</span>
+                            <small class="text-warning fw-bold"><i class="fa-solid fa-star"></i> 8.7</small>
+                        </div>
+                        <h5 class="card-title fw-bold">Dexter</h5>
+                        <p class="card-text text-muted small flex-grow-1">Un analista forense de sangre de la policía de Miami lleva una doble vida como asesino en serie.</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <button class="btn btn-sm btn-outline-light view-details" data-title="Dexter" data-desc="Dexter Morgan trabaja para el departamento de policía de Miami, pero por las noches persigue a criminales que han escapado de la justicia." data-genre="Drama / Suspenso" data-year="2006" data-rating="8.7"><i class="fa-solid fa-circle-info"></i> Detalles</button>
+                            <button class="btn btn-sm btn-danger fav-btn" data-title="Dexter"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col movie-card" data-category="drama">
+                <div class="card h-100 shadow">
+                    <img src="https://m.media-amazon.com/images/M/MV5BMTgwZWU1MWEtMzU3ZC00ZGE4LTlhZmMtMmZkNjAwNWFhMDU3XkEyXkFqcGc@.jpg" class="card-img-top" alt="El Mentalista">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge badge-category">Drama</span>
+                            <small class="text-warning fw-bold"><i class="fa-solid fa-star"></i> 8.2</small>
+                        </div>
+                        <h5 class="card-title fw-bold">El Mentalista</h5>
+                        <p class="card-text text-muted small flex-grow-1">Patrick Jane usa sus agudas dotes de observación e ilusión para resolver crímenes.</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <button class="btn btn-sm btn-outline-light view-details" data-title="El Mentalista" data-desc="Un antiguo psíquico utiliza sus increíbles habilidades de deducción para ayudar a la policía mientras busca al asesino de su familia, Red John." data-genre="Drama" data-year="2008" data-rating="8.2"><i class="fa-solid fa-circle-info"></i> Detalles</button>
+                            <button class="btn btn-sm btn-danger fav-btn" data-title="El Mentalista"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col movie-card" data-category="terror">
+                <div class="card h-100 shadow">
+                    <img src="https://es.web.img3.acsta.net/c_300_300/pictures/18/11/19/12/26/4604205.jpg" class="card-img-top" alt="The Walking Dead">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge badge-category">Terror</span>
+                            <small class="text-warning fw-bold"><i class="fa-solid fa-star"></i> 8.1</small>
+                        </div>
+                        <h5 class="card-title fw-bold">The Walking Dead</h5>
+                        <p class="card-text text-muted small flex-grow-1">Sobrevivientes liderados por Rick Grimes luchan por mantenerse con vida tras el apocalipsis.</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <button class="btn btn-sm btn-outline-light view-details" data-title="The Walking Dead" data-desc="En un mundo dominado por los caminantes muertos vivientes, los sobrevivientes deben enfrentarse a los zombis y a grupos hostiles." data-genre="Terror / Drama" data-year="2010" data-rating="8.1"><i class="fa-solid fa-circle-info"></i> Detalles</button>
+                            <button class="btn btn-sm btn-danger fav-btn" data-title="The Walking Dead"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col movie-card" data-category="terror">
+                <div class="card h-100 shadow">
+                    <img src="https://i.pinimg.com/originals/50/f4/49/50f449791ace1e71cb41989460ef75d7.jpg" class="card-img-top" alt="Scream">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge badge-category">Terror</span>
+                            <small class="text-warning fw-bold"><i class="fa-solid fa-star"></i> 7.4</small>
+                        </div>
+                        <h5 class="card-title fw-bold">Scream</h5>
+                        <p class="card-text text-muted small flex-grow-1">Un asesino enmascarado conocido como Ghostface aterroriza a los jóvenes de Woodsboro.</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <button class="btn btn-sm btn-outline-light view-details" data-title="Scream" data-desc="Un misterioso asesino enmascarado utiliza preguntas de trivia de películas de terror para atormentar a sus víctimas." data-genre="Terror" data-year="1996" data-rating="7.4"><i class="fa-solid fa-circle-info"></i> Detalles</button>
+                            <button class="btn btn-sm btn-danger fav-btn" data-title="Scream"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col movie-card" data-category="comedia">
+                <div class="card h-100 shadow">
+                    <img src="https://image.tmdb.org/t/p/w300_and_h450_face/7GfL6SYdRwJpoDZAsHDG0bOptPV.jpg" class="card-img-top" alt="Todopoderoso">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge badge-category">Comedia</span>
+                            <small class="text-warning fw-bold"><i class="fa-solid fa-star"></i> 6.8</small>
+                        </div>
+                        <h5 class="card-title fw-bold">Todopoderoso (Jim Carrey)</h5>
+                        <p class="card-text text-muted small flex-grow-1">Un reportero descontento recibe los poderes de Dios por una semana para gobernar el mundo.</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <button class="btn btn-sm btn-outline-light view-details" data-title="Todopoderoso (Jim Carrey)" data-desc="Bruce Nolan (Jim Carrey) se queja constantemente de Dios, por lo que este le otorga todos sus poderes divinos para ver si hace un mejor trabajo." data-genre="Comedia" data-year="2003" data-rating="6.8"><i class="fa-solid fa-circle-info"></i> Detalles</button>
+                            <button class="btn btn-sm btn-danger fav-btn" data-title="Todopoderoso (Jim Carrey)"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col movie-card" data-category="comedia">
+                <div class="card h-100 shadow">
+                    <img src="https://mx.web.img3.acsta.net/c_310_420/pictures/20/07/06/22/18/3410533.jpg" class="card-img-top" alt="Son Como Niños">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge badge-category">Comedia</span>
+                            <small class="text-warning fw-bold"><i class="fa-solid fa-star"></i> 6.0</small>
+                        </div>
+                        <h5 class="card-title fw-bold">Son Como Niños (Adam Sandler)</h5>
+                        <p class="card-text text-muted small flex-grow-1">Cinco amigos de la infancia se reúnen años después para pasar un fin de semana festivo.</p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <button class="btn btn-sm btn-outline-light view-details" data-title="Son Como Niños (Adam Sandler)" data-desc="Cinco amigos cercanos se reúnen junto a sus familias en una casa de campo tras la muerte de su antiguo entrenador." data-genre="Comedia" data-year="2010" data-rating="6.0"><i class="fa-solid fa-circle-info"></i> Detalles</button>
+                            <button class="btn btn-sm btn-danger fav-btn" data-title="Son Como Niños (Adam Sandler)"><i class="fa-regular fa-heart"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div class="modal fade" id="watchlistModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title fw-bold text-white"><i class="fa-solid fa-heart text-danger me-2"></i>Mi Lista de Favoritos</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="watchlistItems">
+                    <p class="text-muted text-center my-3" id="emptyWatchlistMsg">Aún no agregaste ninguna película o serie a tu lista.</p>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="movieModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title fw-bold text-white" id="modalTitle">Título</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <div class="ratio ratio-16x9 bg-black rounded overflow-hidden">
+                                <div class="d-flex justify-content-center align-items-center text-muted">
+                                    <i class="fa-solid fa-play fa-3x text-danger"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <p id="modalDesc" class="fs-6">Descripción detallada de la película o serie.</p>
+                            <div class="d-flex gap-3 mb-3">
+                                <span class="badge bg-secondary" id="modalGenre">Género</span>
+                                <span class="badge bg-dark border border-secondary text-white" id="modalYear">Año</span>
+                                <span class="badge bg-warning text-dark fw-bold" id="modalRating"><i class="fa-solid fa-star"></i> Puntuación</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-black text-center py-4 border-top border-secondary mt-5">
+        <div class="container">
+            <p class="mb-0 text-white-50">&copy; 2026 LVFLIX - Plataforma de Entretenimiento Técnico.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            let watchlist = [];
+
+            function updateWatchlistUI() {
+                $('#watchlistCount').text(watchlist.length);
+                let container = $('#watchlistItems');
+                container.empty();
+
+                if (watchlist.length === 0) {
+                    container.append('<p class="text-muted text-center my-3" id="emptyWatchlistMsg">Aún no agregaste ninguna película o serie a tu lista.</p>');
+                } else {
+                    watchlist.forEach(function(title) {
+                        let itemHtml = `
+                            <div class="watchlist-item">
+                                <span class="fw-bold text-white">${title}</span>
+                                <button class="btn btn-sm btn-outline-danger remove-fav" data-title="${title}">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </div>
+                        `;
+                        container.append(itemHtml);
+                    });
+                }
+            }
+
+            $('.filter-btn').on('click', function() {
+                $('.filter-btn').removeClass('active');
+                $(this).addClass('active');
+
+                let filterValue = $(this).attr('data-filter');
+
+                if (filterValue === 'all') {
+                    $('.movie-card').fadeIn(300);
+                } else {
+                    $('.movie-card').each(function() {
+                        if ($(this).attr('data-category') === filterValue) {
+                            $(this).fadeIn(300);
+                        } else {
+                            $(this).fadeOut(300);
+                        }
+                    });
+                }
+            });
+
+            $('#searchInput').on('keyup', function() {
+                let searchText = $(this).val().toLowerCase();
+                $('.movie-card').each(function() {
+                    let title = $(this).find('.card-title').text().toLowerCase();
+                    if (title.includes(searchText)) {
+                        $(this).fadeIn(300);
+                    } else {
+                        $(this).fadeOut(300);
+                    }
+                });
+            });
+
+            $('.view-details').on('click', function() {
+                let title = $(this).attr('data-title');
+                let desc = $(this).attr('data-desc');
+                let genre = $(this).attr('data-genre');
+                let year = $(this).attr('data-year');
+                let rating = $(this).attr('data-rating');
+
+                $('#modalTitle').text(title);
+                $('#modalDesc').text(desc);
+                $('#modalGenre').text(genre);
+                $('#modalYear').text(year);
+                $('#modalRating').html('<i class="fa-solid fa-star"></i> ' + rating);
+                
+                $('#movieModal').modal('show');
+            });
+
+            $('.fav-btn').on('click', function(e) {
+                e.stopPropagation();
+                let title = $(this).attr('data-title');
+                let icon = $(this).find('i');
+
+                if (icon.hasClass('fa-regular')) {
+                    icon.removeClass('fa-regular').addClass('fa-solid');
+                    if (!watchlist.includes(title)) {
+                        watchlist.push(title);
+                    }
+                } else {
+                    icon.removeClass('fa-solid').addClass('fa-regular');
+                    watchlist = watchlist.filter(item => item !== title);
+                }
+                updateWatchlistUI();
+            });
+
+            $(document).on('click', '.remove-fav', function() {
+                let title = $(this).attr('data-title');
+                watchlist = watchlist.filter(item => item !== title);
+                
+                $(`.fav-btn[data-title="${title}"] i`).removeClass('fa-solid').addClass('fa-regular');
+                
+                updateWatchlistUI();
+            });
+        });
+    </script>
+</body>
+</html>
